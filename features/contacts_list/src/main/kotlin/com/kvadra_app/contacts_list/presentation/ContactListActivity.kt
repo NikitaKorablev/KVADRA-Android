@@ -1,10 +1,13 @@
 package com.kvadra_app.contacts_list.presentation
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -17,8 +20,10 @@ import com.kvadra_app.contacts_list.databinding.ActivityContactListBinding
 import com.kvadra_app.contacts_list.di.ContactsListDepsProvider
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import com.kvadra_app.contacts_list.domain.OnContactClickListener
+import androidx.core.net.toUri
 
-class ContactListActivity : AppCompatActivity() {
+class ContactListActivity : AppCompatActivity(), OnContactClickListener {
     private lateinit var binding: ActivityContactListBinding
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -56,7 +61,7 @@ class ContactListActivity : AppCompatActivity() {
         contactsListComponent.inject(this)
     }
 
-    private fun checkPermissions(): Boolean {
+    private fun checkPermissions(): Boolean  {
         val readContacts = ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.READ_CONTACTS
@@ -65,14 +70,19 @@ class ContactListActivity : AppCompatActivity() {
             this,
             Manifest.permission.WRITE_CONTACTS
         ) == PackageManager.PERMISSION_GRANTED
-        return readContacts && writeContacts
+        val callPhone = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CALL_PHONE
+        ) == PackageManager.PERMISSION_GRANTED
+        return readContacts && writeContacts && callPhone
     }
 
     private fun requestPermissions() {
         requestPermissionLauncher.launch(
             arrayOf(
                 Manifest.permission.READ_CONTACTS,
-                Manifest.permission.WRITE_CONTACTS
+                Manifest.permission.WRITE_CONTACTS,
+                Manifest.permission.CALL_PHONE
             )
         )
     }
@@ -83,7 +93,7 @@ class ContactListActivity : AppCompatActivity() {
         val contacts = getContacts()
         val contactItems = groupContactsByLetter(contacts)
 
-        val adapter = ContactsAdapter(contactItems)
+        val adapter = ContactsAdapter(contactItems, this)
         recyclerView.adapter = adapter
     }
 
@@ -129,5 +139,17 @@ class ContactListActivity : AppCompatActivity() {
             contactItems.add(ContactItem(contact, null))
         }
         return contactItems
+    }
+
+    override fun onContactClick(contact: Contact) {
+        Log.d(TAG, "Contact clicked: ${contact.phoneNumber}")
+        val intent = Intent(Intent.ACTION_CALL).apply {
+            data = "tel:${contact.phoneNumber}".toUri()
+        }
+        startActivity(intent)
+    }
+
+    companion object {
+        const val TAG = "ContactListActivity"
     }
 }

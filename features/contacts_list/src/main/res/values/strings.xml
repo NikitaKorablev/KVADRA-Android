@@ -1,1 +1,8 @@
-<resources></resources>
+<resources>
+    <string name="contact_header">Header</string>
+    <string name="contact_name">Name</string>
+    <string name="contact_phone">Phone</string>
+
+<!--    Descriptions-->
+    <string name="circle_desc">Contact image</string>
+</resources>

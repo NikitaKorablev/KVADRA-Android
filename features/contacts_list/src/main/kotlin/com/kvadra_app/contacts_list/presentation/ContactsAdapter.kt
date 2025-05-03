@@ -1,14 +1,18 @@
 package com.kvadra_app.contacts_list.presentation
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.kvadra_app.contacts_list.data.Contact
 import com.kvadra_app.contacts_list.data.ContactItem
+import com.kvadra_app.contacts_list.domain.OnContactClickListener
+import com.kvadra_app.contacts_list.databinding.ContactItemBinding
+import com.kvadra_app.contacts_list.databinding.HeaderItemBinding
 
-class ContactsAdapter(private val contactItems: List<ContactItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ContactsAdapter(
+    private val contactItems: List<ContactItem>,
+    private val onContactClickListener: OnContactClickListener
+): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val TYPE_HEADER = 0
@@ -17,27 +21,30 @@ class ContactsAdapter(private val contactItems: List<ContactItem>) : RecyclerVie
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == TYPE_HEADER) {
-            HeaderViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    android.R.layout.simple_list_item_1, parent, false
-                )
-            )
+            val binding = HeaderItemBinding
+                .inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false)
+
+            HeaderViewHolder(binding)
         } else {
-            ContactViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    android.R.layout.simple_list_item_2, parent, false
+            val binding = ContactItemBinding
+                .inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
                 )
-            )
+
+            ContactViewHolder(binding, onContactClickListener)
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = contactItems[position]
-        if (getItemViewType(position) == TYPE_HEADER) {
+        if (getItemViewType(position) == TYPE_HEADER)
             (holder as HeaderViewHolder).bind(item.header)
-        } else {
-            (holder as ContactViewHolder).bind(item.contact)
-        }
+        else (holder as ContactViewHolder).bind(item.contact)
     }
 
     override fun getItemCount(): Int = contactItems.size
@@ -46,19 +53,31 @@ class ContactsAdapter(private val contactItems: List<ContactItem>) : RecyclerVie
         return if (contactItems[position].header != null) TYPE_HEADER else TYPE_CONTACT
     }
 
-    class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val textView: TextView = itemView.findViewById(android.R.id.text1)
+    class HeaderViewHolder(
+        private val binding: HeaderItemBinding
+    ): RecyclerView.ViewHolder(binding.root) {
         fun bind(header: Char?) {
-            textView.text = header.toString()
+            binding.headerTitle.text = header.toString()
         }
     }
 
-    class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val textViewName: TextView = itemView.findViewById(android.R.id.text1)
-        private val textViewPhone: TextView = itemView.findViewById(android.R.id.text2)
+    class ContactViewHolder(
+        private val binding: ContactItemBinding,
+        private val onContactClickListener: OnContactClickListener
+    ): RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
+                val contact = binding.name.tag as? Contact
+                contact?.let {
+                    onContactClickListener.onContactClick(it)
+                }
+            }
+        }
+
         fun bind(contact: Contact?) {
-            textViewName.text = contact?.name
-            textViewPhone.text = contact?.phoneNumber
+            binding.name.text = contact?.name
+            binding.phone.text = contact?.phoneNumber
+            binding.name.tag = contact
         }
     }
 }
