@@ -61,7 +61,7 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
         contactsListComponent.inject(this)
     }
 
-    private fun checkPermissions(): Boolean  {
+    private fun checkPermissions(): Boolean {
         val readContacts = ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.READ_CONTACTS
