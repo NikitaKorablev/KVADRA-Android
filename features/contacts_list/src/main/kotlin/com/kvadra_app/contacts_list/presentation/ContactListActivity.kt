@@ -1,11 +1,10 @@
 package com.kvadra_app.contacts_list.presentation
 
-import android.Manifest
+import android.app.AlertDialog
 import android.content.ComponentName
 import android.content.ContentProviderOperation
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.pm.PackageManager
 import android.database.Cursor
 import android.os.Bundle
 import android.os.IBinder
@@ -22,8 +21,6 @@ import com.kvadra_app.contacts_list.R
 import com.kvadra_app.core.data.Contact
 import com.kvadra_app.core.data.ContactItem
 import com.kvadra_app.contacts_list.databinding.ActivityContactListBinding
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import com.kvadra_app.contacts_list.domain.OnContactClickListener
 import androidx.core.net.toUri
 import com.aidl.AidlException
@@ -31,19 +28,13 @@ import com.aidl.ContactsList
 import com.aidl.RemoveDuplicateContacts
 import com.aidl.ResultCallback
 import com.kvadra_app.contacts_list.domain.ContactsRemovingStatus
+import com.kvadra_app.contacts_list.utils.ContactsPermissionManager
 
 class ContactListActivity : AppCompatActivity(), OnContactClickListener {
     private lateinit var binding: ActivityContactListBinding
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val granted = permissions.entries.all { it.value }
-        if (granted) {
-            loadContacts()
-        } else {
-            // Обработка случая, когда разрешения не предоставлены
-        }
-    }
+    private lateinit var contactsList: ContactsList
+
+    private lateinit var permissionManager: ContactsPermissionManager
 
     private var removeDuplicateContacts: RemoveDuplicateContacts? = null
     private val serviceConnection = object : ServiceConnection {
@@ -54,8 +45,6 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
             removeDuplicateContacts = null
         }
     }
-
-    private lateinit var contactsList: ContactsList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,11 +57,14 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
             insets
         }
 
-        if (checkPermissions()) {
-            loadContacts()
-        } else {
-            requestPermissions()
-        }
+        permissionManager = ContactsPermissionManager(
+            onPermissionGranted = { loadContacts() },
+            onShowRationaleDialog = { showRationaleDialog() },
+            onShowSettingsDialog = { showSettingsDialog() },
+            context = this
+        )
+        permissionManager.initialize(this)
+        permissionManager.checkAndRequestContactsPermission()
 
         binding.serviceButton.setOnClickListener(this::onServiceButtonClick)
     }
@@ -114,30 +106,32 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
         })
     }
 
-    private fun checkPermissions(): Boolean {
-        val readContacts = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.READ_CONTACTS
-        ) == PackageManager.PERMISSION_GRANTED
-        val writeContacts = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_CONTACTS
-        ) == PackageManager.PERMISSION_GRANTED
-        val callPhone = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.CALL_PHONE
-        ) == PackageManager.PERMISSION_GRANTED
-        return readContacts && writeContacts && callPhone
+    private fun showRationaleDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Требуется разрешение")
+            .setMessage("Для работы с контактами необходимо разрешение на доступ к контактам. Пожалуйста, предоставьте его.")
+            .setPositiveButton("Предоставить") { _, _ ->
+                permissionManager.requestPermission()
+            }
+            .setNegativeButton("Отмена") { _, _ ->
+                showToast("Разрешение не предоставлено")
+            }
+            .setCancelable(false)
+            .show()
     }
 
-    private fun requestPermissions() {
-        requestPermissionLauncher.launch(
-            arrayOf(
-                Manifest.permission.READ_CONTACTS,
-                Manifest.permission.WRITE_CONTACTS,
-                Manifest.permission.CALL_PHONE
-            )
-        )
+    private fun showSettingsDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Разрешение отклонено")
+            .setMessage("Вы отклонили разрешение на доступ к контактам. Чтобы включить его, перейдите в настройки приложения.")
+            .setPositiveButton("Перейти в настройки") { _, _ ->
+                permissionManager.openAppSettings()
+            }
+            .setNegativeButton("Отмена") { _, _ ->
+                showToast("Разрешение не предоставлено")
+            }
+            .setCancelable(false)
+            .show()
     }
 
     private fun loadContacts() {

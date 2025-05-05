@@ -11,10 +11,6 @@ import com.aidl.ContactsList
 import com.kvadra_app.core.data.Contact
 
 class DuplicateContactsRemoverService : Service() {
-    companion object {
-        private const val TAG = "RemoveDuplicateContacts"
-    }
-
     private lateinit var resultReceiver: BroadcastReceiver
 
     override fun onDestroy() {
@@ -65,5 +61,9 @@ class DuplicateContactsRemoverService : Service() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "RemoveDuplicateContacts"
     }
 }
