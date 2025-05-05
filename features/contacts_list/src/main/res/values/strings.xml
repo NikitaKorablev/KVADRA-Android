@@ -5,4 +5,23 @@
 
 <!--    Descriptions-->
     <string name="circle_desc">Contact image</string>
+
+
+<!--    AlertMessages-->
+    <string name="permission_required_title">Permission Required</string>
+    <string name="permission_required_message">The app needs access to your contacts to function properly. Please grant the permission.</string>
+    <string name="permission_grant">Grant</string>
+    <string name="permission_cancel">Cancel</string>
+    <string name="permission_denied_title">Permission Denied</string>
+    <string name="permission_denied_message">You have denied the contacts permission. Please enable it in the app settings.</string>
+    <string name="open_settings">Go to Settings</string>
+    <string name="permission_not_granted">Permission not granted</string>
+    <string name="additional_permissions_required">Additional permissions required</string>
+
+<!--    Contacts text-->
+    <string name="no_duplicate_contacts">No duplicate contacts found</string>
+    <string name="success_message">Duplicate contacts removed successfully</string>
+    <string name="unexpected_exception">An unexpected error occurred</string>
+    <string name="removing_exception">Error removing duplicates</string>
+
 </resources>

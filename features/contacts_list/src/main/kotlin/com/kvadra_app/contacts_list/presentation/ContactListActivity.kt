@@ -100,7 +100,7 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
             }
 
             override fun onError(aidlException: AidlException) {
-                showToast(ContactsRemovingStatus.REMOVING_EXCEPTION)
+                showToast(R.string.removing_exception.toString())
                 Log.e(TAG, aidlException.toException().message.toString())
             }
         })
@@ -108,13 +108,13 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
 
     private fun showRationaleDialog() {
         AlertDialog.Builder(this)
-            .setTitle("Требуется разрешение")
-            .setMessage("Для работы с контактами необходимо разрешение на доступ к контактам. Пожалуйста, предоставьте его.")
-            .setPositiveButton("Предоставить") { _, _ ->
+            .setTitle(R.string.permission_required_title)
+            .setMessage(R.string.permission_denied_message)
+            .setPositiveButton(R.string.permission_grant) { _, _ ->
                 permissionManager.requestPermission()
             }
-            .setNegativeButton("Отмена") { _, _ ->
-                showToast("Разрешение не предоставлено")
+            .setNegativeButton(R.string.permission_cancel) { _, _ ->
+                showToast(R.string.permission_not_granted.toString())
             }
             .setCancelable(false)
             .show()
@@ -122,13 +122,13 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
 
     private fun showSettingsDialog() {
         AlertDialog.Builder(this)
-            .setTitle("Разрешение отклонено")
-            .setMessage("Вы отклонили разрешение на доступ к контактам. Чтобы включить его, перейдите в настройки приложения.")
-            .setPositiveButton("Перейти в настройки") { _, _ ->
+            .setTitle(R.string.permission_denied_title)
+            .setMessage(R.string.permission_denied_message)
+            .setPositiveButton(R.string.open_settings) { _, _ ->
                 permissionManager.openAppSettings()
             }
-            .setNegativeButton("Отмена") { _, _ ->
-                showToast("Разрешение не предоставлено")
+            .setNegativeButton(R.string.permission_cancel) { _, _ ->
+                showToast(R.string.permission_not_granted.toString())
             }
             .setCancelable(false)
             .show()
@@ -188,7 +188,7 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
 
     private fun deleteContacts(contacts: List<Contact>): ContactsRemovingStatus {
         if (contacts.isEmpty())
-            return ContactsRemovingStatus.Success(ContactsRemovingStatus.NO_DUPLICATE_CONTACTS)
+            return ContactsRemovingStatus.Success(R.string.no_duplicate_contacts.toString())
 
         val ops = ArrayList<ContentProviderOperation>()
         for (contact in contacts) {
@@ -205,10 +205,10 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
 
         try {
             contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
-            return ContactsRemovingStatus.Success(ContactsRemovingStatus.SUCCESS_MESSAGE)
+            return ContactsRemovingStatus.Success(R.string.success_message.toString())
         } catch (e: Exception) {
             return ContactsRemovingStatus.Failed(
-                ContactsRemovingStatus.UNEXPECTED_EXCEPTION,
+                R.string.unexpected_exception.toString(),
                 e.message.toString()
             )
         }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_header">Заголовок</string>
+    <string name="contact_name">Имя</string>
+    <string name="contact_phone">Телефон</string>
+
+    <!--    Descriptions-->
+    <string name="circle_desc">Картинка</string>
+
+
+    <!--    AlertMessages-->
+    <string name="permission_required_title">Требуется разрешение</string>
+    <string name="permission_required_message">Для работы с контактами необходимо разрешение на доступ к контактам. Пожалуйста, предоставьте его.</string>
+    <string name="permission_grant">Предоставить</string>
+    <string name="permission_cancel">Отмена</string>
+    <string name="permission_denied_title">Разрешение отклонено</string>
+    <string name="permission_denied_message">Вы отклонили разрешение на доступ к контактам. Пожалуйста, включите его в настройках приложения.</string>
+    <string name="open_settings">Перейти в настройки</string>
+    <string name="permission_not_granted">Разрешение не предоставлено</string>
+    <string name="additional_permissions_required">Требуются дополнительные разрешения</string>
+
+    <!--    Contacts text-->
+    <string name="no_duplicate_contacts">Дублирующиеся контакты не найдены</string>
+    <string name="success_message">Дублирующиеся контакты успешно удалены</string>
+    <string name="unexpected_exception">Произошла непредвиденная ошибка</string>
+    <string name="removing_exception">Ошибка при удалении дубликатов</string>
+
+</resources>
