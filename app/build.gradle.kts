@@ -44,10 +44,6 @@ dependencies {
     implementation(projects.core)
     implementation(projects.features.contactsList)
 
-    // Dagger
-    implementation(libs.dagger)
-    kapt(libs.dagger.compiler)
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
