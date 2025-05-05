@@ -1,16 +1,17 @@
 package com.kvadra_app.contacts_list.presentation
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.kvadra_app.contacts_list.data.Contact
-import com.kvadra_app.contacts_list.data.ContactItem
+import com.kvadra_app.core.data.Contact
+import com.kvadra_app.core.data.ContactItem
 import com.kvadra_app.contacts_list.domain.OnContactClickListener
 import com.kvadra_app.contacts_list.databinding.ContactItemBinding
 import com.kvadra_app.contacts_list.databinding.HeaderItemBinding
 
 class ContactsAdapter(
-    private val contactItems: List<ContactItem>,
+    private var contactItems: List<ContactItem>,
     private val onContactClickListener: OnContactClickListener
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -80,4 +81,11 @@ class ContactsAdapter(
             binding.name.tag = contact
         }
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateContacts(newContactItems: List<ContactItem>) {
+        contactItems = newContactItems
+        notifyDataSetChanged()
+    }
+
 }

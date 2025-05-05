@@ -26,3 +26,5 @@ include(":features")
 
 include(":features:contacts_list")
 include(":core")
+include(":aidl")
+include(":server")

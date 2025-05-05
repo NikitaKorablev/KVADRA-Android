@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <queries>
+        <intent>
+            <action android:name="com.server.service.DuplicateContactsRemoverService" />
+        </intent>
+    </queries>
+
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
@@ -11,7 +17,6 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
-        android:name=".KVADRAApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
