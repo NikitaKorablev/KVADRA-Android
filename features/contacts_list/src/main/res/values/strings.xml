@@ -2,6 +2,8 @@
     <string name="contact_header">Header</string>
     <string name="contact_name">Name</string>
     <string name="contact_phone">Phone</string>
+    <string name="button_text">Delete duplicate contacts</string>
+
 
 <!--    Descriptions-->
     <string name="circle_desc">Contact image</string>
