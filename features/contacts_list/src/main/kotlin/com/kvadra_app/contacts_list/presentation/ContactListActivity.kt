@@ -88,36 +88,40 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
     }
 
     private fun onServiceButtonClick(view: View?) {
-        removeDuplicateContacts?.execute(contactsList, object : ResultCallback.Stub() {
-            override fun onSuccess(contacts: ContactsList) {
-                when (val res = contactsManager.deleteContacts(contacts.contacts)) {
-                    is ContactsRemovingStatus.Failed -> {
-                        showToast(res.message)
-                        Log.e(TAG, res.err)
-                    }
-                    is ContactsRemovingStatus.Success -> {
-                        showToast(res.message)
-                        loadContacts()
+        if (permissionManager.hasContactsPermission()) {
+
+            removeDuplicateContacts?.execute(contactsList, object : ResultCallback.Stub() {
+                override fun onSuccess(contacts: ContactsList) {
+                    when (val res = contactsManager.deleteContacts(contacts.contacts)) {
+                        is ContactsRemovingStatus.Failed -> {
+                            showToast(res.message)
+                            Log.e(TAG, res.err)
+                        }
+                        is ContactsRemovingStatus.Success -> {
+                            showToast(res.message)
+                            loadContacts()
+                        }
                     }
                 }
-            }
 
-            override fun onError(aidlException: AidlException) {
-                showToast(R.string.removing_exception.toString())
-                Log.e(TAG, aidlException.toException().message.toString())
-            }
-        })
+                override fun onError(aidlException: AidlException) {
+                    showToast(getString(R.string.removing_exception))
+                    Log.e(TAG, aidlException.toException().message.toString())
+                }
+            })
+
+        } else permissionManager.checkAndRequestContactsPermission()
     }
 
     private fun showRationaleDialog() {
         AlertDialog.Builder(this)
-            .setTitle(R.string.permission_required_title)
-            .setMessage(R.string.permission_denied_message)
-            .setPositiveButton(R.string.permission_grant) { _, _ ->
+            .setTitle(getString(R.string.permission_required_title))
+            .setMessage(getString(R.string.permission_denied_message))
+            .setPositiveButton(getString(R.string.permission_grant)) { _, _ ->
                 permissionManager.requestPermission()
             }
-            .setNegativeButton(R.string.permission_cancel) { _, _ ->
-                showToast(R.string.permission_not_granted.toString())
+            .setNegativeButton(getString(R.string.permission_cancel)) { _, _ ->
+                showToast(getString(R.string.permission_not_granted))
             }
             .setCancelable(false)
             .show()
@@ -125,13 +129,13 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
 
     private fun showSettingsDialog() {
         AlertDialog.Builder(this)
-            .setTitle(R.string.permission_denied_title)
-            .setMessage(R.string.permission_denied_message)
-            .setPositiveButton(R.string.open_settings) { _, _ ->
+            .setTitle(getString(R.string.permission_denied_title))
+            .setMessage(getString(R.string.permission_denied_message))
+            .setPositiveButton(getString(R.string.open_settings)) { _, _ ->
                 permissionManager.openAppSettings()
             }
-            .setNegativeButton(R.string.permission_cancel) { _, _ ->
-                showToast(R.string.permission_not_granted.toString())
+            .setNegativeButton(getString(R.string.permission_cancel)) { _, _ ->
+                showToast(getString(R.string.permission_not_granted))
             }
             .setCancelable(false)
             .show()

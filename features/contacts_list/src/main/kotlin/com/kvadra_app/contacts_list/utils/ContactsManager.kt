@@ -53,7 +53,7 @@ class ContactsManager(
 
     fun deleteContacts(contacts: List<Contact>): ContactsRemovingStatus {
         if (contacts.isEmpty())
-            return ContactsRemovingStatus.Success(R.string.no_duplicate_contacts.toString())
+            return ContactsRemovingStatus.Success(context.getString(R.string.no_duplicate_contacts))
 
         val ops = ArrayList<ContentProviderOperation>()
         for (contact in contacts) {
@@ -70,10 +70,10 @@ class ContactsManager(
 
         try {
             context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
-            return ContactsRemovingStatus.Success(R.string.success_message.toString())
+            return ContactsRemovingStatus.Success(context.getString(R.string.success_message))
         } catch (e: Exception) {
             return ContactsRemovingStatus.Failed(
-                R.string.unexpected_exception.toString(),
+                context.getString(R.string.unexpected_exception),
                 e.message.toString()
             )
         }

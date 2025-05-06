@@ -69,7 +69,7 @@ class ContactsPermissionManager(
         context.startActivity(intent)
     }
 
-    private fun hasContactsPermission(): Boolean {
+    fun hasContactsPermission(): Boolean {
         val readContacts = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.READ_CONTACTS
@@ -86,8 +86,13 @@ class ContactsPermissionManager(
     }
 
     private fun shouldShowRequestPermissionRationale(): Boolean {
+        val activity = context as FragmentActivity
         return ActivityCompat.shouldShowRequestPermissionRationale(
-            context as FragmentActivity, Manifest.permission.READ_CONTACTS
+            activity, Manifest.permission.READ_CONTACTS
+        ) || ActivityCompat.shouldShowRequestPermissionRationale(
+            activity, Manifest.permission.WRITE_CONTACTS
+        ) || ActivityCompat.shouldShowRequestPermissionRationale(
+            activity, Manifest.permission.CALL_PHONE
         )
     }
 }
