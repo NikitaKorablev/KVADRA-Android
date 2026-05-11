@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="horizontal_indent">20dp</dimen>
+    <dimen name="contact_internal_indent">5dp</dimen>
+    <dimen name="contact_elements_indent">15dp</dimen>
+
+    <dimen name="circle_width">50dp</dimen>
+</resources>
