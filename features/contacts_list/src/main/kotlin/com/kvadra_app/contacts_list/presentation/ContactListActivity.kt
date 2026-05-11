@@ -24,6 +24,7 @@ import ru.kvadra_app.aidl.ContactsList
 import ru.kvadra_app.aidl.RemoveDuplicateContacts
 import ru.kvadra_app.aidl.ResultCallback
 import com.kvadra_app.contacts_list.domain.ContactsRemovingStatus
+import com.kvadra_app.contacts_list.presentation.adapters.ContactsAdapter
 import com.kvadra_app.contacts_list.utils.ContactsManager
 import com.kvadra_app.contacts_list.utils.ContactsPermissionManager
 
