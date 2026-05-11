@@ -2,13 +2,10 @@ package com.kvadra_app.contacts_list.presentation
 
 import android.app.AlertDialog
 import android.content.ComponentName
-import android.content.ContentProviderOperation
 import android.content.Intent
 import android.content.ServiceConnection
-import android.database.Cursor
 import android.os.Bundle
 import android.os.IBinder
-import android.provider.ContactsContract
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -18,15 +15,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.kvadra_app.contacts_list.R
-import com.kvadra_app.core.data.Contact
-import com.kvadra_app.core.data.ContactItem
+import ru.kvadra_app.model.Contact
 import com.kvadra_app.contacts_list.databinding.ActivityContactListBinding
 import com.kvadra_app.contacts_list.domain.OnContactClickListener
 import androidx.core.net.toUri
-import com.aidl.AidlException
-import com.aidl.ContactsList
-import com.aidl.RemoveDuplicateContacts
-import com.aidl.ResultCallback
+import ru.kvadra_app.aidl.AidlException
+import ru.kvadra_app.aidl.ContactsList
+import ru.kvadra_app.aidl.RemoveDuplicateContacts
+import ru.kvadra_app.aidl.ResultCallback
 import com.kvadra_app.contacts_list.domain.ContactsRemovingStatus
 import com.kvadra_app.contacts_list.utils.ContactsManager
 import com.kvadra_app.contacts_list.utils.ContactsPermissionManager
@@ -165,16 +161,8 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
     }
 
     private fun createExplicitIntent(): Intent {
-        val intent = Intent("com.server.service.DuplicateContactsRemoverService")
-        val services = packageManager.queryIntentServices(intent, 0)
-        if (services.isEmpty()) {
-            throw IllegalStateException("Приложение-сервер не установлено")
-        }
-        return Intent(intent).apply {
-            val resolveInfo = services[0]
-            val packageName = resolveInfo.serviceInfo.packageName
-            val className = resolveInfo.serviceInfo.name
-            component = ComponentName(packageName, className)
+        return Intent("ru.kvadra_app.server.service.DuplicateContactsRemoverService").apply {
+            `package` = packageName
         }
     }
 

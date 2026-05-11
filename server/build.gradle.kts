@@ -36,8 +36,8 @@ android {
 }
 
 dependencies {
-    implementation(projects.core)
-    implementation(projects.aidl)
+    implementation(projects.core.model)
+    implementation(projects.core.aidl)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

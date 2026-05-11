@@ -22,9 +22,8 @@ dependencyResolutionManagement {
 rootProject.name = "KVADRA"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
-include(":features")
 
+include(":core:model")
+include(":core:server")
+include(":core:aidl")
 include(":features:contacts_list")
-include(":core")
-include(":aidl")
-include(":server")

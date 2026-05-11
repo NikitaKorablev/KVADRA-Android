@@ -8,8 +8,8 @@ import android.util.Log
 import com.kvadra_app.contacts_list.R
 import com.kvadra_app.contacts_list.domain.ContactsRemovingStatus
 import com.kvadra_app.contacts_list.presentation.ContactListActivity.Companion.TAG
-import com.kvadra_app.core.data.Contact
-import com.kvadra_app.core.data.ContactItem
+import ru.kvadra_app.model.Contact
+import ru.kvadra_app.model.ContactItem
 
 class ContactsManager(
   private val context: Context

@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.kvadra_app.core.data.Contact
-import com.kvadra_app.core.data.ContactItem
+import ru.kvadra_app.model.Contact
+import ru.kvadra_app.model.ContactItem
 import com.kvadra_app.contacts_list.domain.OnContactClickListener
 import com.kvadra_app.contacts_list.databinding.ContactItemBinding
 import com.kvadra_app.contacts_list.databinding.HeaderItemBinding

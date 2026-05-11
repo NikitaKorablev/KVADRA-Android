@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.kvadra_app"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -41,7 +41,9 @@ android {
 }
 
 dependencies {
-    implementation(projects.core)
+    implementation(projects.core.model)
+    implementation(projects.core.aidl)
+    implementation(projects.core.server)
     implementation(projects.features.contactsList)
 
     implementation(libs.androidx.core.ktx)

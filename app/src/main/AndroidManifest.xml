@@ -3,9 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <queries>
-        <intent>
-            <action android:name="com.server.service.DuplicateContactsRemoverService" />
-        </intent>
     </queries>
 
     <uses-feature
@@ -35,6 +32,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name="ru.kvadra_app.server.service.DuplicateContactsRemoverService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="ru.kvadra_app.server.service.DuplicateContactsRemoverService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

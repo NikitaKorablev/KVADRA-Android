@@ -1,6 +1,6 @@
 package com.kvadra_app.contacts_list.domain
 
-import com.kvadra_app.core.data.Contact
+import ru.kvadra_app.model.Contact
 
 interface OnContactClickListener {
     fun onContactClick(contact: Contact)
