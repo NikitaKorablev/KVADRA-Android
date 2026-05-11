@@ -1,4 +1,4 @@
-package com.kvadra_app.contacts_list.utils
+package ru.kvadra_app.contacts_list.utils
 
 import android.Manifest
 import android.content.Context

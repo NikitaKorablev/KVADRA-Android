@@ -1,12 +1,12 @@
-package com.kvadra_app.contacts_list.presentation.adapters
+package ru.kvadra_app.contacts_list.presentation.adapters
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.kvadra_app.contacts_list.databinding.ContactItemBinding
-import com.kvadra_app.contacts_list.databinding.HeaderItemBinding
-import com.kvadra_app.contacts_list.domain.OnContactClickListener
+import ru.kvadra_app.contacts_list.databinding.ContactItemBinding
+import ru.kvadra_app.contacts_list.databinding.HeaderItemBinding
+import ru.kvadra_app.contacts_list.domain.OnContactClickListener
 import ru.kvadra_app.model.Contact
 import ru.kvadra_app.model.ContactItem
 

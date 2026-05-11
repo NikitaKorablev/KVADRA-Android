@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.kvadra_app"
+    namespace = "ru.kvadra_app"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.kvadra_app"
+        applicationId = "ru.kvadra_app"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

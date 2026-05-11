@@ -2,33 +2,35 @@ package com.kvadra_app.contacts_list.presentation
 
 import android.app.AlertDialog
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import com.kvadra_app.contacts_list.R
 import ru.kvadra_app.model.Contact
-import com.kvadra_app.contacts_list.databinding.ActivityContactListBinding
-import com.kvadra_app.contacts_list.domain.OnContactClickListener
+import com.kvadra_app.contacts_list.databinding.FragmentContactListBinding
+import ru.kvadra_app.contacts_list.domain.OnContactClickListener
 import androidx.core.net.toUri
 import ru.kvadra_app.aidl.AidlException
 import ru.kvadra_app.aidl.ContactsList
 import ru.kvadra_app.aidl.RemoveDuplicateContacts
 import ru.kvadra_app.aidl.ResultCallback
-import com.kvadra_app.contacts_list.presentation.adapters.ContactsAdapter
-import com.kvadra_app.contacts_list.utils.ContactsManager
-import com.kvadra_app.contacts_list.utils.ContactsPermissionManager
+import ru.kvadra_app.contacts_list.presentation.adapters.ContactsAdapter
+import ru.kvadra_app.contacts_list.utils.ContactsManager
+import ru.kvadra_app.contacts_list.utils.ContactsPermissionManager
 import ru.kvadra_app.model.ResultState
 
-class ContactListActivity : AppCompatActivity(), OnContactClickListener {
-    private lateinit var binding: ActivityContactListBinding
+class ContactListFragment : Fragment(), OnContactClickListener {
+    private var _binding: FragmentContactListBinding? = null
+    private val binding get() = _binding!!
+    
     private lateinit var contactsList: ContactsList
 
     private lateinit var permissionManager: ContactsPermissionManager
@@ -44,23 +46,24 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivityContactListBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentContactListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        contactsManager = ContactsManager(context = this)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        contactsManager = ContactsManager(context = requireContext())
         permissionManager = ContactsPermissionManager(
             onPermissionGranted = { loadContacts() },
             onShowRationaleDialog = { showRationaleDialog() },
             onShowSettingsDialog = { showSettingsDialog() },
-            context = this
+            context = requireContext()
         )
         permissionManager.initialize(this)
         permissionManager.checkAndRequestContactsPermission()
@@ -71,16 +74,21 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
     override fun onStart() {
         super.onStart()
         val intent = createExplicitIntent()
-        bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+        requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
     override fun onStop() {
         super.onStop()
-        unbindService(serviceConnection)
+        requireContext().unbindService(serviceConnection)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun showToast(message: String) {
-        Toast.makeText(this@ContactListActivity, message, Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     private fun onServiceButtonClick(view: View?) {
@@ -88,19 +96,23 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
 
             removeDuplicateContacts?.execute(contactsList, object : ResultCallback.Stub() {
                 override fun onSuccess(contacts: ContactsList) {
-                    when (val res = contactsManager.deleteContacts(contacts.contacts)) {
-                        is ResultState.Error -> showToast(res.error)
+                    activity?.runOnUiThread {
+                        when (val res = contactsManager.deleteContacts(contacts.contacts)) {
+                            is ResultState.Error -> showToast(res.error)
 
-                        is ResultState.Success -> {
-                            showToast(res.data)
-                            loadContacts()
+                            is ResultState.Success -> {
+                                showToast(res.data)
+                                loadContacts()
+                            }
                         }
                     }
                 }
 
                 override fun onError(aidlException: AidlException) {
-                    showToast(getString(R.string.removing_exception))
-                    Log.e(TAG, aidlException.toException().message.toString())
+                    activity?.runOnUiThread {
+                        showToast(getString(R.string.removing_exception))
+                        Log.e(TAG, aidlException.toException().message.toString())
+                    }
                 }
             })
 
@@ -108,7 +120,7 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
     }
 
     private fun showRationaleDialog() {
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.permission_required_title))
             .setMessage(getString(R.string.permission_denied_message))
             .setPositiveButton(getString(R.string.permission_grant)) { _, _ ->
@@ -122,7 +134,7 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
     }
 
     private fun showSettingsDialog() {
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.permission_denied_title))
             .setMessage(getString(R.string.permission_denied_message))
             .setPositiveButton(getString(R.string.open_settings)) { _, _ ->
@@ -166,11 +178,11 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
 
     private fun createExplicitIntent(): Intent {
         return Intent("ru.kvadra_app.server.service.DuplicateContactsRemoverService").apply {
-            `package` = packageName
+            `package` = requireContext().packageName
         }
     }
 
     companion object {
-        const val TAG = "ContactListActivity"
+        private const val TAG = "ContactListFragment"
     }
 }

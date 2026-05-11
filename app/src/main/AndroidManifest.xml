@@ -24,7 +24,7 @@
         android:theme="@style/Theme.KVADRA"
         tools:targetApi="31">
         <activity
-            android:name=".contacts_list.presentation.ContactListActivity"
+            android:name="ru.kvadra_app.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

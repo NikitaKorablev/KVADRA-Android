@@ -1,12 +1,11 @@
-package com.kvadra_app.contacts_list.utils
+package ru.kvadra_app.contacts_list.utils
 
 import android.content.ContentProviderOperation
 import android.content.Context
 import android.database.Cursor
 import android.provider.ContactsContract
 import android.util.Log
-import com.kvadra_app.contacts_list.R
-import com.kvadra_app.contacts_list.presentation.ContactListActivity.Companion.TAG
+import ru.kvadra_app.contacts_list.R
 import ru.kvadra_app.model.Contact
 import ru.kvadra_app.model.ContactItem
 import ru.kvadra_app.model.ResultState
@@ -92,5 +91,9 @@ class ContactsManager(
             contactItems.add(ContactItem(contact, null))
         }
         return contactItems
+    }
+
+    companion object {
+        private const val TAG = "ContactsManager"
     }
 }

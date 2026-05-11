@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.kvadra_app.contacts_list"
+    namespace = "ru.kvadra_app.contacts_list"
     compileSdk = 35
 
     defaultConfig {
