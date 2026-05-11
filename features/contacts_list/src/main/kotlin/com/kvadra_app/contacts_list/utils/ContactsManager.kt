@@ -6,10 +6,10 @@ import android.database.Cursor
 import android.provider.ContactsContract
 import android.util.Log
 import com.kvadra_app.contacts_list.R
-import com.kvadra_app.contacts_list.domain.ContactsRemovingStatus
 import com.kvadra_app.contacts_list.presentation.ContactListActivity.Companion.TAG
 import ru.kvadra_app.model.Contact
 import ru.kvadra_app.model.ContactItem
+import ru.kvadra_app.model.ResultState
 
 class ContactsManager(
   private val context: Context
@@ -51,9 +51,9 @@ class ContactsManager(
         return contacts
     }
 
-    fun deleteContacts(contacts: List<Contact>): ContactsRemovingStatus {
+    fun deleteContacts(contacts: List<Contact>): ResultState<String, String> {
         if (contacts.isEmpty())
-            return ContactsRemovingStatus.Success(context.getString(R.string.no_duplicate_contacts))
+            return ResultState.Success(context.getString(R.string.no_duplicate_contacts))
 
         val ops = ArrayList<ContentProviderOperation>()
         for (contact in contacts) {
@@ -70,12 +70,12 @@ class ContactsManager(
 
         try {
             context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
-            return ContactsRemovingStatus.Success(context.getString(R.string.success_message))
+            return ResultState.Success(context.getString(R.string.success_message))
         } catch (e: Exception) {
-            return ContactsRemovingStatus.Failed(
-                context.getString(R.string.unexpected_exception),
-                e.message.toString()
-            )
+            val err = context.getString(R.string.unexpected_exception)
+            Log.e(TAG, err, e)
+
+            return ResultState.Error(err)
         }
     }
 

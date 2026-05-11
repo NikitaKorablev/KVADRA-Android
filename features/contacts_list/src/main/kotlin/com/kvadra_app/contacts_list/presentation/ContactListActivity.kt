@@ -13,7 +13,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.RecyclerView
 import com.kvadra_app.contacts_list.R
 import ru.kvadra_app.model.Contact
 import com.kvadra_app.contacts_list.databinding.ActivityContactListBinding
@@ -23,10 +22,10 @@ import ru.kvadra_app.aidl.AidlException
 import ru.kvadra_app.aidl.ContactsList
 import ru.kvadra_app.aidl.RemoveDuplicateContacts
 import ru.kvadra_app.aidl.ResultCallback
-import com.kvadra_app.contacts_list.domain.ContactsRemovingStatus
 import com.kvadra_app.contacts_list.presentation.adapters.ContactsAdapter
 import com.kvadra_app.contacts_list.utils.ContactsManager
 import com.kvadra_app.contacts_list.utils.ContactsPermissionManager
+import ru.kvadra_app.model.ResultState
 
 class ContactListActivity : AppCompatActivity(), OnContactClickListener {
     private lateinit var binding: ActivityContactListBinding
@@ -90,12 +89,10 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
             removeDuplicateContacts?.execute(contactsList, object : ResultCallback.Stub() {
                 override fun onSuccess(contacts: ContactsList) {
                     when (val res = contactsManager.deleteContacts(contacts.contacts)) {
-                        is ContactsRemovingStatus.Failed -> {
-                            showToast(res.message)
-                            Log.e(TAG, res.err)
-                        }
-                        is ContactsRemovingStatus.Success -> {
-                            showToast(res.message)
+                        is ResultState.Error -> showToast(res.error)
+
+                        is ResultState.Success -> {
+                            showToast(res.data)
                             loadContacts()
                         }
                     }
