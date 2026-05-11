@@ -13,9 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.kvadra_app.contacts_list.R
+import ru.kvadra_app.contacts_list.R
 import ru.kvadra_app.model.Contact
-import com.kvadra_app.contacts_list.databinding.FragmentContactListBinding
+import ru.kvadra_app.contacts_list.databinding.FragmentContactListBinding
 import ru.kvadra_app.contacts_list.domain.OnContactClickListener
 import androidx.core.net.toUri
 import ru.kvadra_app.aidl.AidlException
