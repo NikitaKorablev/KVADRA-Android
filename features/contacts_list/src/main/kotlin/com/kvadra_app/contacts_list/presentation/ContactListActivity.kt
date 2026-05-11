@@ -139,17 +139,23 @@ class ContactListActivity : AppCompatActivity(), OnContactClickListener {
     }
 
     private fun loadContacts() {
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-
         val contacts = contactsManager.getContacts()
         contactsList = ContactsList(contacts)
-        val contactItems = contactsManager.groupContactsByLetter(contacts)
 
-        val adapter = recyclerView.adapter as? ContactsAdapter
-        if (adapter != null) {
-            adapter.updateContacts(contactItems)
+        if (contacts.isEmpty()) {
+            binding.recyclerView.visibility = View.GONE
+            binding.emptyTextView.visibility = View.VISIBLE
         } else {
-            recyclerView.adapter = ContactsAdapter(contactItems, this)
+            binding.recyclerView.visibility = View.VISIBLE
+            binding.emptyTextView.visibility = View.GONE
+
+            val contactItems = contactsManager.groupContactsByLetter(contacts)
+            val adapter = binding.recyclerView.adapter as? ContactsAdapter
+            if (adapter != null) {
+                adapter.updateContacts(contactItems)
+            } else {
+                binding.recyclerView.adapter = ContactsAdapter(contactItems, this)
+            }
         }
     }
 
