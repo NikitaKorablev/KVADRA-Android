@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import ru.kvadra_app.contacts_list.R
 import ru.kvadra_app.model.Contact
 import ru.kvadra_app.contacts_list.domain.OnContactClickListener
@@ -36,6 +37,7 @@ class ContactListFragment : Fragment(), OnContactClickListener {
     private lateinit var permissionManager: ContactsPermissionManager
     private lateinit var contactsManager: ContactsManager
 
+    private val viewModel: ContactListViewModel by viewModels()
     private val contactItemsState = mutableStateOf<List<ContactItem>>(emptyList())
     private val isEmptyState = mutableStateOf(true)
 
@@ -91,10 +93,6 @@ class ContactListFragment : Fragment(), OnContactClickListener {
     override fun onStop() {
         super.onStop()
         requireContext().unbindService(serviceConnection)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
     }
 
     private fun showToast(message: String) {
