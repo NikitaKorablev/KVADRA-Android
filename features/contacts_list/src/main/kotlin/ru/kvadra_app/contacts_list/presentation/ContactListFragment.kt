@@ -1,4 +1,4 @@
-package com.kvadra_app.contacts_list.presentation
+package ru.kvadra_app.contacts_list.presentation
 
 import android.app.AlertDialog
 import android.content.ComponentName
@@ -12,29 +12,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import ru.kvadra_app.contacts_list.R
 import ru.kvadra_app.model.Contact
-import ru.kvadra_app.contacts_list.databinding.FragmentContactListBinding
 import ru.kvadra_app.contacts_list.domain.OnContactClickListener
 import androidx.core.net.toUri
 import ru.kvadra_app.aidl.AidlException
 import ru.kvadra_app.aidl.ContactsList
 import ru.kvadra_app.aidl.RemoveDuplicateContacts
 import ru.kvadra_app.aidl.ResultCallback
-import ru.kvadra_app.contacts_list.presentation.adapters.ContactsAdapter
+import ru.kvadra_app.contacts_list.presentation.theme.ContactsTheme
 import ru.kvadra_app.contacts_list.utils.ContactsManager
 import ru.kvadra_app.contacts_list.utils.ContactsPermissionManager
+import ru.kvadra_app.model.ContactItem
 import ru.kvadra_app.model.ResultState
 
 class ContactListFragment : Fragment(), OnContactClickListener {
-    private var _binding: FragmentContactListBinding? = null
-    private val binding get() = _binding!!
     
     private lateinit var contactsList: ContactsList
 
     private lateinit var permissionManager: ContactsPermissionManager
     private lateinit var contactsManager: ContactsManager
+
+    private val contactItemsState = mutableStateOf<List<ContactItem>>(emptyList())
+    private val isEmptyState = mutableStateOf(true)
 
     private var removeDuplicateContacts: RemoveDuplicateContacts? = null
     private val serviceConnection = object : ServiceConnection {
@@ -51,8 +54,18 @@ class ContactListFragment : Fragment(), OnContactClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentContactListBinding.inflate(inflater, container, false)
-        return binding.root
+        return ComposeView(requireContext()).apply {
+            setContent {
+                ContactsTheme {
+                    ContactListScreen(
+                        contactItems = contactItemsState.value,
+                        onContactClick = { contact -> onContactClick(contact) },
+                        onServiceButtonClick = { onServiceButtonClick(null) },
+                        isEmpty = isEmptyState.value
+                    )
+                }
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,8 +80,6 @@ class ContactListFragment : Fragment(), OnContactClickListener {
         )
         permissionManager.initialize(this)
         permissionManager.checkAndRequestContactsPermission()
-
-        binding.serviceButton.setOnClickListener(this::onServiceButtonClick)
     }
 
     override fun onStart() {
@@ -84,7 +95,6 @@ class ContactListFragment : Fragment(), OnContactClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
     }
 
     private fun showToast(message: String) {
@@ -152,19 +162,11 @@ class ContactListFragment : Fragment(), OnContactClickListener {
         contactsList = ContactsList(contacts)
 
         if (contacts.isEmpty()) {
-            binding.recyclerView.visibility = View.GONE
-            binding.emptyTextView.visibility = View.VISIBLE
+            isEmptyState.value = true
+            contactItemsState.value = emptyList()
         } else {
-            binding.recyclerView.visibility = View.VISIBLE
-            binding.emptyTextView.visibility = View.GONE
-
-            val contactItems = contactsManager.groupContactsByLetter(contacts)
-            val adapter = binding.recyclerView.adapter as? ContactsAdapter
-            if (adapter != null) {
-                adapter.updateContacts(contactItems)
-            } else {
-                binding.recyclerView.adapter = ContactsAdapter(contactItems, this)
-            }
+            isEmptyState.value = false
+            contactItemsState.value = contactsManager.groupContactsByLetter(contacts)
         }
     }
 
